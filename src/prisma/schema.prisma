@@ -1,0 +1,378 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  password String
+  role     UserRole @default(EMPLOYEE)
+
+  departmentId Int?
+  positionId   Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  travelRequests TravelRequest[]
+
+  approvals Approval[]
+
+  delegationsGiven ApprovalDelegation[] @relation("Delegator")
+
+  delegationsReceived ApprovalDelegation[] @relation("Delegate")
+
+  notifications Notification[]
+}
+
+
+
+enum UserRole {
+  EMPLOYEE
+  MANAGER
+  DEPARTMENT_HEAD
+  HRD
+  FINANCE
+  ADMIN
+  SUPER_ADMIN
+}
+
+
+
+model Department {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  users User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model Position {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  users User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model TravelRequest {
+  id Int @id @default(autoincrement())
+
+  userId   Int
+  policyId Int
+
+  destination String
+  purpose     String @db.Text
+
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+
+  status TravelRequestStatus @default(DRAFT)
+
+  estimatedCost Decimal @db.Decimal(15, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User         @relation(fields: [userId], references: [id])
+  policy TravelPolicy @relation(fields: [policyId], references: [id])
+
+  approvals      Approval[]
+  documents      TravelDocument[]
+  bookings       Booking[]
+  reimbursement  Reimbursement?
+
+  @@index([userId])
+  @@index([policyId])
+  @@index([status])
+}
+
+
+
+enum TravelRequestStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+
+
+model TravelPolicy {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  // Batas biaya
+  hotelLimit     Decimal @db.Decimal(15, 2)
+  transportLimit Decimal @db.Decimal(15, 2)
+  allowanceLimit Decimal @db.Decimal(15, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  travelRequests TravelRequest[]
+}
+
+
+
+model Approval {
+  id Int @id @default(autoincrement())
+
+  travelId   Int
+  approverId Int
+
+  level Int
+
+  status ApprovalStatus @default(PENDING)
+
+  note       String?   @db.Text
+  approvedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  travel   TravelRequest @relation(fields: [travelId], references: [id])
+  approver User          @relation(fields: [approverId], references: [id])
+
+  @@index([travelId])
+  @@index([approverId])
+  @@unique([travelId, level])
+}
+
+
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+
+
+model ApprovalDelegation {
+  id Int @id @default(autoincrement())
+
+  delegatorId Int
+  delegateId  Int
+
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+
+  reason String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  delegator User @relation(
+    "Delegator",
+    fields: [delegatorId],
+    references: [id]
+  )
+
+  delegate User @relation(
+    "Delegate",
+    fields: [delegateId],
+    references: [id]
+  )
+
+  @@index([delegatorId])
+  @@index([delegateId])
+}
+
+
+
+model TravelDocument {
+  id Int @id @default(autoincrement())
+
+  travelId Int
+
+  fileName String
+  filePath String
+  fileType String?
+
+  uploadedAt DateTime @default(now())
+
+  travel TravelRequest @relation(
+    fields: [travelId],
+    references: [id]
+  )
+
+  @@index([travelId])
+}
+
+
+
+model Booking {
+  id Int @id @default(autoincrement())
+
+  travelId Int
+
+  type BookingType
+
+  provider     String?
+  bookingCode  String?
+  description  String? @db.Text
+
+  bookingDate DateTime?
+
+  amount Decimal @db.Decimal(15, 2)
+
+  status BookingStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  travel TravelRequest @relation(
+    fields: [travelId],
+    references: [id]
+  )
+
+  @@index([travelId])
+}
+
+
+
+enum BookingType {
+  TRANSPORT
+  HOTEL
+  OTHER
+}
+
+
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+
+
+model Reimbursement {
+  id Int @id @default(autoincrement())
+
+  travelId Int @unique
+
+  totalAmount    Decimal @db.Decimal(15, 2)
+  approvedAmount Decimal? @db.Decimal(15, 2)
+
+  status ReimbursementStatus @default(DRAFT)
+
+  submittedAt DateTime?
+  approvedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  travel TravelRequest @relation(
+    fields: [travelId],
+    references: [id]
+  )
+
+  items ReimbursementItem[]
+}
+
+
+
+model ReimbursementItem {
+  id Int @id @default(autoincrement())
+
+  reimbursementId Int
+
+  category ReimbursementCategory
+
+  description String
+
+  amount Decimal @db.Decimal(15, 2)
+
+  transactionDate DateTime @db.Date
+
+  receiptPath String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reimbursement Reimbursement @relation(
+    fields: [reimbursementId],
+    references: [id]
+  )
+
+  @@index([reimbursementId])
+}
+
+
+
+enum ReimbursementStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  PAID
+}
+
+
+
+enum ReimbursementCategory {
+  TRANSPORT
+  HOTEL
+  MEAL
+  ALLOWANCE
+  OTHER
+}
+
+
+model Notification {
+  id Int @id @default(autoincrement())
+
+  userId Int
+
+  title   String
+  message String @db.Text
+
+  type NotificationType
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  user User @relation(
+    fields: [userId],
+    references: [id]
+  )
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+
+enum NotificationType {
+  TRAVEL_SUBMITTED
+  APPROVAL_REQUIRED
+  TRAVEL_APPROVED
+  TRAVEL_REJECTED
+  REIMBURSEMENT_SUBMITTED
+  REIMBURSEMENT_APPROVED
+  REIMBURSEMENT_REJECTED
+  SYSTEM
+}
