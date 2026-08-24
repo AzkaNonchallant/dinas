@@ -1,6 +1,26 @@
-node_modules
-# Keep environment variables out of version control
+node_modules/
+
 .env
+.env.*.local
 
-/generated/prisma
+dist/
+build/
 
+prisma/migrations/dev/
+
+src/uploads/
+storage/
+
+*.log
+logs/
+
+docker/data/
+docker/volumes/
+
+.DS_Store
+.vscode/
+.idea/
+
+coverage/
+
+skills-lock.json
