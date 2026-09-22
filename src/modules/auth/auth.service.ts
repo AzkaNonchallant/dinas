@@ -28,6 +28,19 @@ export const authServcice = {
         const isMatch = await bcrypt.compare(input.password, user.password);
         if (!isMatch) throw new AppError('Email atau password salah', 401);
 
-        const token = signToken({ id: user.id, email: user.email, role: user.role})
-    }
+        const token = signToken({ id: user.id, email: user.email, role: user.role});
+
+        return { user: sanitizeUser(user), token };
+    },
+
+    async getProfile(userId: number) {
+        const user = await authRepository.findById(userId);
+        if (!user) throw new AppError('User tidak ditemukan', 404);
+        return sanitizeUser(user);
+    },
+};
+
+function sanitizeUser<T extends { password: string }>(user: T) {
+    const { password, ...rest } = user;
+    return rest;
 }
