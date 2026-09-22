@@ -1,18 +1,21 @@
 import { Router } from 'express';
+import { authMiddleware, requireRole } from '../../middleware/auth.middleware';
+import { validate } from '../../middleware/validation.middleware';
 import { approvalController } from './approval.controller';
-import { authMiddleware } from '../../middleware/auth.middleware';
-import { validate } from '../../middleware/validation,middleware';
-import { decideApprovalSchema, cretaeDelegationSchema } from './approval.schema';
+import { createDelegationSchema, decideSchema } from './approval.schema';
 
 const router = Router();
 
 router.use(authMiddleware);
 
-router.get('/pending', approvalController.listPending);
-router.get('/travel/:travelId/timeline', approvalController.listPending);
-router.patch('/:id/decision', validate(decideApprovalSchema), approvalController.decide);
+router.get('/pending', requireRole(['MANAGER', 'DEPARTMENT_HEAD', 'HRD']), approvalController.listPending);
 
-router.post('/delegations', validate(createDelegationScema), approvalController.createDelegation);
-router.get('/delegations', approvalController.listDelegations);
+router.get('/travel/:travelId', approvalController.getTimeline);
+
+router.post('/delegations', requireRole(['MANAGER', 'DEPARTMENT_HEAD', 'HRD']), validate(createDelegationSchema), approvalController.createDelegation);
+router.get('/delegations', requireRole(['MANAGER', 'DEPARTMENT_HEAD', 'HRD']), approvalController.listDelegations);
+router.delete('/delegations/:id', requireRole(['MANAGER', 'DEPARTMENT_HEAD', 'HRD']), approvalController.deleteDelegation);
+
+router.patch('/:id/decision', validate(decideSchema), approvalController.decide);
 
 export default router;
