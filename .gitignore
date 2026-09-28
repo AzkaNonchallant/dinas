@@ -12,6 +12,8 @@ uploads/
 src/uploads/
 storage/
 
+bruno/
+
 *.log
 logs/
 
