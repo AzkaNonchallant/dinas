@@ -1,0 +1,21 @@
+meta {
+  name: List Policies
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/travel/policies
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post {
+  if (res.body && res.body.data && res.body.data.length) {
+    bru.setEnvVar("policyId", res.body.data[0].id);
+  }
+}

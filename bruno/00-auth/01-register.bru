@@ -1,0 +1,35 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Azka",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "departmentId": {{departmentId}},
+    "positionId": {{positionId}}
+  }
+}
+
+script:post {
+  if (res.status === 201 || res.status === 200) {
+    bru.setEnvVar("token", res.body.data.token);
+    bru.setEnvVar("userId", res.body.data.user.id);
+    console.log("token & userId tersimpan");
+  }
+}
+
+docs {
+  Registrasi user baru. Role default EMPLOYEE.
+  departmentId & positionId opsional (boleh null/hapus).
+  409 kalau email sudah terdaftar.
+}

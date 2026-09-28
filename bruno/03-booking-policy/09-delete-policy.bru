@@ -1,0 +1,15 @@
+meta {
+  name: Delete Policy
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{baseUrl}}/api/travel/policies/{{policyId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

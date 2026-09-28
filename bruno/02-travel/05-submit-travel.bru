@@ -1,0 +1,27 @@
+meta {
+  name: Submit Travel
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/travel/{{travelId}}/submit
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post {
+  if (res.status === 200 && res.body.data.approvals && res.body.data.approvals.length) {
+    bru.setEnvVar("approvalId", res.body.data.approvals[0].id);
+    console.log("travel status:", res.body.data.status, "| approvals:", res.body.data.approvals.length);
+  }
+}
+
+docs {
+  DRAFT -> SUBMITTED, generate Approval level 1 MANAGER / 2 DEPARTMENT_HEAD / 3 HRD.
+  Simpan approvalId (level 1) buat dipakai di folder 04-approvals.
+}

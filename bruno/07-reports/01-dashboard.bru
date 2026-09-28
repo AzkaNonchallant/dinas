@@ -1,0 +1,20 @@
+meta {
+  name: Dashboard
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/reports/dashboard
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Role: ADMIN, SUPER_ADMIN.
+  Response: total, byStatus, upcoming, ongoing, completed, totalEstimatedCost.
+}

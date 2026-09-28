@@ -1,0 +1,19 @@
+meta {
+  name: Expense By Project
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/reports/expense-by-project
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Dikelompokkan per purpose (belum ada tagging project di DB).
+}

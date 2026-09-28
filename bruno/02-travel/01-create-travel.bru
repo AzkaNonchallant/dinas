@@ -1,0 +1,43 @@
+meta {
+  name: Create Travel
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/travel
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "destination": "Surabaya",
+    "purpose": "Kunjungan klien & training tim sales",
+    "startDate": "2026-10-01",
+    "endDate": "2026-10-03",
+    "estimatedCost": 4500000,
+    "policyId": {{policyId}}
+  }
+}
+
+script:post {
+  if (res.status === 201) {
+    bru.setEnvVar("travelId", res.body.data.id);
+    console.log("travelId:", res.body.data.id, "status:", res.body.data.status);
+  }
+}
+
+docs {
+  Role: EMPLOYEE. Status awal DRAFT.
+  endDate harus >= startDate. policyId harus exist.
+  Jalankan "Submit Travel" berikutnya untuk menguji approval flow.
+}

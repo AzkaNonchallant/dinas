@@ -1,0 +1,25 @@
+meta {
+  name: List Delegations
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/approvals/delegations
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post {
+  if (res.body && res.body.data && res.body.data.length) {
+    bru.setEnvVar("delegationId", res.body.data[0].id);
+  }
+}
+
+docs {
+  Delegasi yang diberikan (sebagai delegator) & diterima (sebagai delegate).
+}

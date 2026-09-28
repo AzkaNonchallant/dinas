@@ -1,0 +1,15 @@
+meta {
+  name: Delete Item
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/reimbursements/items/{{itemId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

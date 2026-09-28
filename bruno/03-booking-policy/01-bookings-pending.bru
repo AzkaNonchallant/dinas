@@ -1,0 +1,20 @@
+meta {
+  name: List Bookings Pending
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/travel/bookings/pending
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Role: TRAVEL_ADMIN, ADMIN.
+  Travel APPROVED yang belum punya booking -> buat request baru dulu (20-travel/01-create-travel, submit, approve semua level).
+}

@@ -1,0 +1,29 @@
+meta {
+  name: Pay
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{baseUrl}}/api/reimbursements/{{reimbursementId}}/pay
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "externalJournalRef": "BKM-2026-10-001"
+  }
+}
+
+docs {
+  Role: FINANCE / SUPER_ADMIN. Hanya status APPROVED (400 kalau belum).
+}

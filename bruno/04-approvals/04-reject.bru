@@ -1,0 +1,31 @@
+meta {
+  name: Reject
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/approvals/{{approvalId}}/decision
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "status": "REJECTED",
+    "note": "Anggaran tidak tersedia"
+  }
+}
+
+docs {
+  Travel langsung jadi REJECTED, pemohon dapat notifikasi TRAVEL_REJECTED.
+  Setelah itu approval lain tidak bisa diputuskan (400).
+}

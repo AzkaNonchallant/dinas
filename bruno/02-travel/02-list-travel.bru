@@ -1,0 +1,29 @@
+meta {
+  name: List Travel
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/travel?page=1&limit=10
+  body: none
+  auth: bearer
+}
+
+params:query {
+  page: 1
+  limit: 10
+  status: 
+  from: 
+  to: 
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  EMPLOYEE: miliknya. MANAGER/DEPT_HEAD/HRD: miliknya + yang ada approval-nya.
+  ADMIN/TRAVEL_ADMIN/SUPER_ADMIN: semua.
+  Filter: status, from, to (filter startDate).
+}

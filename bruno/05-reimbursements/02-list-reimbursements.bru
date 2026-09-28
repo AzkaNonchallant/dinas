@@ -1,0 +1,31 @@
+meta {
+  name: List Reimbursements
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/reimbursements?page=1&limit=10
+  body: none
+  auth: bearer
+}
+
+params:query {
+  page: 1
+  limit: 10
+  status: 
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post {
+  if (res.body && res.body.data && res.body.data.data && res.body.data.data.length) {
+    bru.setEnvVar("reimbursementId", res.body.data.data[0].id);
+  }
+}
+
+docs {
+  Employee: miliknya. FINANCE/SUPER_ADMIN: semua. Filter: status.
+}

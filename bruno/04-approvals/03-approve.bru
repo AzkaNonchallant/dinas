@@ -1,0 +1,33 @@
+meta {
+  name: Approve
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/approvals/{{approvalId}}/decision
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "status": "APPROVED",
+    "note": "Sesuai budget, disetujui"
+  }
+}
+
+docs {
+  Approver terkait atau delegate aktif.
+  Kalau masih ada level berikutnya -> travel jadi IN_REVIEW, approver berikutnya dapat notifikasi.
+  Kalau ini level terakhir -> travel jadi APPROVED.
+  Approve ulang tiap level (1 MANAGER, 2 DEPARTMENT_HEAD, 3 HRD) sampai travel APPROVED.
+}

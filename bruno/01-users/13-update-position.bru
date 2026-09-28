@@ -1,0 +1,25 @@
+meta {
+  name: Update Position
+  type: http
+  seq: 12
+}
+
+put {
+  url: {{baseUrl}}/api/users/positions/{{positionId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Staf Operasional"
+  }
+}

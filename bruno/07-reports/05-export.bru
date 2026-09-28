@@ -1,0 +1,27 @@
+meta {
+  name: Export Report
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/reports/export?format=excel
+  body: none
+  auth: bearer
+}
+
+params:query {
+  format: excel
+  from: 2026-01-01
+  to: 2026-12-31
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Role: FINANCE, ADMIN.
+  Implementasi sekarang selalu balas CSV (text/csv) walau format=pdf|excel.
+  Cek tab Response, bukan JSON.
+}

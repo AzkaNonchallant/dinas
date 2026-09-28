@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../../config/database';
 import type { CreateReimbursementInput, CreateItemInput, ListReimbursementsQuery } from './reimbursement.schema';
 
@@ -31,9 +32,9 @@ export const reimbursementRepository = {
   },
 
   async list(query: ListReimbursementsQuery, userId?: number) {
-    const where = {
-      status: query.status,
-      travel: userId ? { userId } : undefined,
+    const where: Prisma.ReimbursementWhereInput = {
+      ...(query.status ? { status: query.status } : {}),
+      ...(userId ? { travel: { userId } } : {}),
     };
 
     const [items, total] = await Promise.all([
@@ -85,7 +86,14 @@ export const reimbursementRepository = {
 
   createItem(reimbursementId: number, data: CreateItemInput) {
     return prisma.reimbursementItem.create({
-      data: { reimbursementId, ...data },
+      data: {
+        reimbursementId,
+        category: data.category,
+        description: data.description,
+        amount: data.amount,
+        transactionDate: data.transactionDate,
+        ...(data.receiptPath !== undefined ? { receiptPath: data.receiptPath } : {}),
+      },
     });
   },
 

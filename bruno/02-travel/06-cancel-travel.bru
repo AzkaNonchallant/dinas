@@ -1,0 +1,19 @@
+meta {
+  name: Cancel Travel
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/travel/{{travelId}}/cancel
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Hanya pemilik. Gagal (400) kalau status sudah APPROVED/REJECTED/CANCELLED/COMPLETED.
+}
